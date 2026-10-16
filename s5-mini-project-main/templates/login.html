@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Owner Portal Login – EcoStay Pricing AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e4620;
+            --primary-light: #2d6a4f;
+            --primary-dark: #132e15;
+            --accent: #52b788;
+            --accent-soft: #d8f3dc;
+            --sand: #f4f7f2;
+            --surface: #ffffff;
+            --text-main: #19271c;
+            --text-muted: #5a6e60;
+            --border: #e2e8df;
+            --shadow-lg: 0 20px 40px rgba(19, 46, 21, 0.12);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef5ec 0%, #d8ebd7 100%);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius);
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            text-align: left;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+            margin: 0 auto 14px;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15);
+        }
+
+        .brand-header h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+
+        .brand-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .err-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fbfdfa;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(82, 183, 136, 0.18);
+        }
+
+        .demo-helper {
+            background: #f3f9f4;
+            border: 1px dashed #b7ddbe;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .demo-helper span {
+            font-weight: 600;
+        }
+
+        .btn-autofill {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-autofill:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(30, 70, 32, 0.25);
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(30, 70, 32, 0.3);
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-link a {
+            color: var(--primary-light);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="brand-header">
+            <div class="brand-icon">🌿</div>
+            <h2>EcoStay Revenue AI</h2>
+            <p>Owner Dashboard & Dynamic Pricing Control</p>
+        </div>
+
+        {% if error %}
+        <div class="err-banner">
+            <span>⚠️</span> {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="demo-helper">
+            <div>
+                <span>Quick Demo Login:</span> admin / admin123
+            </div>
+            <button type="button" class="btn-autofill" onclick="autofill()">Auto-fill</button>
+        </div>
+
+        <form method="post" id="loginForm">
+            <div class="form-group">
+                <label for="username">Owner Username</label>
+                <div class="input-wrapper">
+                    <input name="username" id="username" placeholder="e.g. admin" required autofocus autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input name="password" id="password" type="password" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Sign In to Dashboard →</button>
+
+            <div class="footer-link">
+                <a href="/book">← View Customer Booking Page</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function autofill() {
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'admin123';
+        }
+    </script>
+</body>
+</html>
