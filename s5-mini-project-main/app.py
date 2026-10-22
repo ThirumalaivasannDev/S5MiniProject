@@ -10,7 +10,30 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "eco-tourism-secret-key-2026-local")
 app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
-model = joblib.load("model.pkl")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE = os.path.join(BASE_DIR, "model.pkl")
+RESULTS_FILE = os.path.join(BASE_DIR, "results.json")
+DATA_FILE = os.path.join(BASE_DIR, "data.csv")
+
+if not os.path.exists(MODEL_FILE):
+    print("model.pkl not found. Training model now...")
+    if not os.path.exists(DATA_FILE):
+        import numpy as np
+        from generate_data import true_demand, ROOMS, SEASON
+        rng = np.random.default_rng(42)
+        df_cal = calendar(pd.date_range("2023-01-01", "2025-12-31"))
+        df_cal["price"] = (3500 * (1 + .2*df_cal.is_weekend) * (1 + .1*(df_cal.month.map(SEASON) > 1.1)) * rng.uniform(.6, 2.2, len(df_cal))).clip(2000, 9000).round(-2)
+        df_cal["bookings"] = np.minimum(ROOMS, rng.poisson(true_demand(df_cal, df_cal.price)))
+        df_cal["occupancy"] = df_cal.bookings / ROOMS * 100
+        df_cal["revenue"] = df_cal.bookings * df_cal.price
+        df_cal.to_csv(DATA_FILE, index=False)
+    res = pe.train()
+    m_temp = joblib.load(MODEL_FILE)
+    s_temp = pe.simulate(m_temp)
+    json.dump(dict(models=res, simulation=s_temp), open(RESULTS_FILE, "w"), indent=1)
+
+model = joblib.load(MODEL_FILE)
 
 def owner_only(f):
     @wraps(f)
@@ -72,7 +95,10 @@ def whatif(): return jsonify(pe.whatif(model, request.args["date"], float(reques
 
 @app.route("/api/results")
 @owner_only
-def results(): return jsonify(json.load(open("results.json")))
+def results():
+    if os.path.exists(RESULTS_FILE):
+        return jsonify(json.load(open(RESULTS_FILE)))
+    return jsonify(models=[], simulation={"dynamic": 0, "fixed": 0, "uplift_pct": 0})
 
 @app.route("/api/bookings", methods=["GET", "POST"])
 @owner_only

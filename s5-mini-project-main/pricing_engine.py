@@ -1,8 +1,13 @@
-import joblib, numpy as np, pandas as pd
+import os, joblib, numpy as np, pandas as pd
 from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from curve_model import CurveModel
 from generate_data import ROOMS, true_demand, calendar
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE = os.path.join(BASE_DIR, "model.pkl")
+DATA_FILE = os.path.join(BASE_DIR, "data.csv")
+
 FEATURES = ["dow","month","is_weekend","is_festival","is_event","price"]
 GRID = np.arange(2000, 9001, 100)            # price bounds: Rs.2000 - Rs.9000
 FIXED_PRICE = 3500
@@ -11,7 +16,7 @@ def _m(name, y, p):
     return dict(model=name, MAE=round(mean_absolute_error(y,p),2), RMSE=round(mean_squared_error(y,p)**.5,2), R2=round(r2_score(y,p),3))
 
 def train():
-    df = pd.read_csv("data.csv", parse_dates=["date"])
+    df = pd.read_csv(DATA_FILE, parse_dates=["date"])
     tr, te = df[df.date < "2025-01-01"], df[df.date >= "2025-01-01"]
     base = tr.groupby(["month","is_weekend"]).bookings.mean()
     res = [_m("Baseline (month+weekend average)", te.bookings, te.apply(lambda r: base[(r.month,r.is_weekend)], axis=1))]
@@ -20,7 +25,7 @@ def train():
     res += [_m("Random Forest", te.bookings, rf.predict(te[FEATURES])), _m("Gradient Boosting (price-monotonic)", te.bookings, gb.predict(te[FEATURES]))]
     curve = CurveModel().fit(tr[FEATURES], tr.bookings)
     res.append(_m("Demand curve (used for pricing)", te.bookings, np.minimum(ROOMS, curve.predict(te[FEATURES]))))
-    joblib.dump(curve, "model.pkl")   # smooth price response -> varied, explainable prices
+    joblib.dump(curve, MODEL_FILE)   # smooth price response -> varied, explainable prices
     return res
 
 def recommend(model, cal):
@@ -43,5 +48,9 @@ def whatif(model, date, price):
     b = float(min(ROOMS, model.predict(X)[0])); return dict(bookings=round(b,1), occupancy=round(b/ROOMS*100,1), revenue=int(b*price))
 
 if __name__ == "__main__":
-    import json; res = train(); m = joblib.load("model.pkl"); s = simulate(m)
-    json.dump(dict(models=res, simulation=s), open("results.json","w"), indent=1); print(res, s)
+    import json
+    res = train()
+    m = joblib.load(MODEL_FILE)
+    s = simulate(m)
+    json.dump(dict(models=res, simulation=s), open(os.path.join(BASE_DIR, "results.json"), "w"), indent=1)
+    print(res, s)

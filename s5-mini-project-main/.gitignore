@@ -9,10 +9,10 @@ venv/
 __pycache__/
 *.pyc
 
-# generated files
-data.csv
-model.pkl
-results.json
+# generated files (tracked for cloud deployment)
+# data.csv
+# model.pkl
+# results.json
 
 # OS / editor
 .DS_Store
