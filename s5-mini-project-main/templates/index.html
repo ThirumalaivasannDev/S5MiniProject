@@ -1,0 +1,1236 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EcoStay AI – Revenue Management & Dynamic Pricing Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e4620;
+            --primary-light: #2d6a4f;
+            --primary-dark: #132e15;
+            --accent: #52b788;
+            --accent-soft: #d8f3dc;
+            --amber: #e76f51;
+            --amber-soft: #fde8e4;
+            --gold: #d4a373;
+            --sand: #f4f7f2;
+            --surface: #ffffff;
+            --text-main: #19271c;
+            --text-muted: #5a6e60;
+            --border: #e2e8df;
+            --shadow-sm: 0 2px 8px rgba(30, 70, 32, 0.05);
+            --shadow-md: 0 6px 20px rgba(30, 70, 32, 0.07);
+            --radius-md: 14px;
+            --radius-lg: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--sand);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Top Navigation Header */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 16px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 42px;
+            height: 42px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 22px;
+            box-shadow: 0 2px 8px rgba(45, 106, 79, 0.12);
+        }
+
+        .brand-titles h1 {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .brand-titles p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef8f0;
+            color: var(--primary-light);
+            border: 1px solid #c8e6ce;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background: #2d6a4f;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.2);
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-view-customer {
+            background: #f4f7f2;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-view-customer:hover {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+        }
+
+        .btn-logout {
+            background: #fff0f0;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-logout:hover {
+            background: #fee2e2;
+        }
+
+        /* Dashboard Layout */
+        main {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 30px 24px 60px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* KPI Metric Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 20px 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .kpi-card.accent::before {
+            background: var(--accent);
+        }
+
+        .kpi-card.amber::before {
+            background: var(--amber);
+        }
+
+        .kpi-card.gold::before {
+            background: var(--gold);
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .kpi-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tag-green {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+
+        .tag-blue {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+
+        /* Generic Section Card */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        /* Chart Controls */
+        .range-selectors {
+            display: flex;
+            gap: 6px;
+        }
+
+        .range-btn {
+            background: #f4f7f2;
+            border: 1px solid var(--border);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .range-btn.active, .range-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* 2-Column Responsive Grids */
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 950px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* What-If Simulator */
+        .simulator-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        input[type="date"], select, input[type="number"], textarea, input[type="text"] {
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fbfdfa;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.18);
+        }
+
+        .slider-wrapper {
+            background: #f8faf6;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .price-badge {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #cbd8ce;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .slider-bounds {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn-predict {
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(30, 70, 32, 0.15);
+        }
+
+        .btn-predict:hover {
+            background: var(--primary-light);
+        }
+
+        .simulation-result {
+            margin-top: 14px;
+            background: linear-gradient(135deg, #f2f8f3 0%, #e8f4ea 100%);
+            border: 1px solid #cce5d2;
+            border-radius: 12px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .sim-stat-box h6 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .sim-stat-box div {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        /* Modern Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f4f7f2;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            padding: 10px 14px;
+            border-bottom: 1.5px solid var(--border);
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #fafcf9;
+        }
+
+        .highlight-row td {
+            background-color: #f0f7f2;
+            font-weight: 600;
+        }
+
+        .badge-model {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-winner {
+            background: #d8f3dc;
+            color: #1b4332;
+        }
+
+        /* Booking Logger */
+        .inline-booking-form {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 18px;
+        }
+
+        @media (max-width: 700px) {
+            .inline-booking-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .btn-save-booking {
+            padding: 10px 18px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            height: 42px;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-save-booking:hover {
+            background: var(--primary-light);
+        }
+
+        .booking-save-msg {
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .msg-success { color: #1b5e20; }
+        .msg-err { color: #b91c1c; }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #e2e8df;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        /* Feedback Section */
+        .feedback-form-box {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 22px;
+            padding: 18px;
+            background: #f9fbf8;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 6px;
+            font-size: 22px;
+            cursor: pointer;
+            color: #cbd5e1;
+            user-select: none;
+        }
+
+        .star-rating span.active, .star-rating span:hover, .star-rating span.hover {
+            color: #f59e0b;
+        }
+
+        .btn-submit-feedback {
+            padding: 10px 16px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            align-self: flex-start;
+            transition: background 0.2s;
+        }
+
+        .btn-submit-feedback:hover {
+            background: var(--primary-light);
+        }
+
+        .feedback-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .feedback-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .feedback-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feedback-cat-tag {
+            font-size: 11px;
+            font-weight: 700;
+            background: #edf7ee;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .feedback-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .feedback-stars {
+            color: #f59e0b;
+            font-size: 13px;
+        }
+
+        .feedback-comment {
+            font-size: 13px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation Header -->
+    <header>
+        <div class="header-brand">
+            <div class="brand-logo">🌿</div>
+            <div class="brand-titles">
+                <h1>EcoStay Revenue AI</h1>
+                <p>Dynamic Pricing & Revenue Management Dashboard</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-badge">
+                <span class="status-pulse"></span>
+                <span>Demand Optimizer Online (20 Rooms)</span>
+            </div>
+            <a href="/book" class="nav-btn btn-view-customer" target="_blank" title="Preview public customer rate page">
+                <span>👁️</span> Customer View
+            </a>
+            <a href="/logout" class="nav-btn btn-logout" title="Sign out of owner portal">
+                <span>🚪</span> Sign Out
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <!-- KPI Metric Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card accent">
+                <div class="kpi-label">
+                    <span>Revenue Uplift vs Fixed Price</span>
+                    <span class="kpi-tag tag-green">AI Gain</span>
+                </div>
+                <div class="kpi-value" id="kpiUplift">–</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">Dynamic model optimization uplift</div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <span>Dynamic Projected Revenue</span>
+                    <span class="kpi-tag tag-green">2025 Sim</span>
+                </div>
+                <div class="kpi-value" id="kpiDynamic">–</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">Expected with AI elasticity pricing</div>
+            </div>
+
+            <div class="kpi-card amber">
+                <div class="kpi-label">
+                    <span>Fixed Benchmark Revenue</span>
+                    <span class="kpi-tag tag-blue">₹3,500 Base</span>
+                </div>
+                <div class="kpi-value" id="kpiFixed">–</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">Baseline without dynamic adjustment</div>
+            </div>
+
+            <div class="kpi-card gold">
+                <div class="kpi-label">
+                    <span>Fleet & Booking Model</span>
+                    <span class="kpi-tag tag-green">Healthy</span>
+                </div>
+                <div class="kpi-value">20 Suites</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:6px;">Nonlinear Demand Curve Active</div>
+            </div>
+        </section>
+
+        <!-- 60-Day Forecast Chart Card -->
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h3 class="card-title">📈 Recommended Price & Predicted Occupancy Forecast</h3>
+                    <div class="card-subtitle">AI-generated daily rate recommendations and projected guest occupancy</div>
+                </div>
+                <div class="range-selectors">
+                    <button class="range-btn" onclick="loadForecast(14, this)">14 Days</button>
+                    <button class="range-btn" onclick="loadForecast(30, this)">30 Days</button>
+                    <button class="range-btn active" onclick="loadForecast(60, this)">60 Days</button>
+                </div>
+            </div>
+            <div style="position:relative; width:100%; height:280px;">
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Row 2: What-If Simulator + Model Comparison -->
+        <div class="grid-2col">
+            <!-- Left: What-if Simulator -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">🧪 What-If Demand Simulator</h3>
+                        <div class="card-subtitle">Simulate pricing scenarios and test price elasticity for any date</div>
+                    </div>
+                </div>
+                
+                <div class="simulator-form">
+                    <div class="form-group">
+                        <label for="whatifDate">Target Stay Date</label>
+                        <input type="date" id="whatifDate">
+                    </div>
+
+                    <div class="slider-wrapper">
+                        <div class="slider-header">
+                            <span style="font-size:13px; font-weight:700;">Simulated Room Price</span>
+                            <span class="price-badge" id="sliderValDisplay">₹4,000</span>
+                        </div>
+                        <input type="range" id="whatifPrice" min="2000" max="9000" step="100" value="4000">
+                        <div class="slider-bounds">
+                            <span>₹2,000 (Min Bound)</span>
+                            <span>₹9,000 (Max Bound)</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-predict" onclick="runWhatIf()">⚡ Predict Demand & Revenue</button>
+
+                    <div class="simulation-result" id="whatifResult">
+                        <div class="sim-stat-box">
+                            <h6>Predicted Bookings</h6>
+                            <div id="resBookings">–</div>
+                        </div>
+                        <div class="sim-stat-box">
+                            <h6>Occupancy Rate</h6>
+                            <div id="resOccupancy">–</div>
+                        </div>
+                        <div class="sim-stat-box">
+                            <h6>Daily Revenue</h6>
+                            <div id="resRevenue">–</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: Model Comparison Table -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">🎯 Model Comparison & Validation</h3>
+                        <div class="card-subtitle">Evaluated on 2025 hold-out test dataset across 4 regression architectures</div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="modelTable">
+                        <thead>
+                            <tr>
+                                <th>Model Architecture</th>
+                                <th>MAE</th>
+                                <th>RMSE</th>
+                                <th>R² Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modelTableBody">
+                            <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Loading evaluation benchmarks...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top:16px; padding:12px; background:#f4f9f5; border-radius:10px; border:1px solid #d8ebd7; font-size:12px; color:var(--primary-dark); line-height:1.5;">
+                    💡 <strong>Why Demand Curve?</strong> Standard tree regressors (Random Forest) can make erratic non-monotonic pricing predictions. The smooth parametric demand-curve model enforces realistic elasticity, achieving the highest R² (0.793) and best revenue optimization.
+                </div>
+            </section>
+        </div>
+
+        <!-- Row 3: Daily Booking Logger + Feedback & Feature Request System -->
+        <div class="grid-2col">
+            <!-- Left: Daily Booking Entry & History -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">📝 Record Daily Stay Bookings</h3>
+                        <div class="card-subtitle">Log actual daily room sales to track performance against recommendations</div>
+                    </div>
+                </div>
+
+                <div class="inline-booking-form">
+                    <div class="form-group">
+                        <label for="bookDate">Stay Date</label>
+                        <input type="date" id="bookDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookRooms">Rooms (0–20)</label>
+                        <input type="number" id="bookRooms" min="0" max="20" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="bookPrice">Rate (₹)</label>
+                        <input type="number" id="bookPrice" min="2000" max="9000" placeholder="₹">
+                    </div>
+                    <div>
+                        <button class="btn-save-booking" onclick="recordBooking()">Save Log</button>
+                    </div>
+                </div>
+                <div id="bookingMsg" class="booking-save-msg"></div>
+
+                <div style="margin-top:14px;" class="table-responsive">
+                    <table id="bookingHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Rooms Booked</th>
+                                <th>Nightly Rate</th>
+                                <th>Total Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingHistoryBody">
+                            <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Loading recent bookings...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Right: Owner Feedback & System Insights Form -->
+            <section class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title">💬 Owner Feedback & System Insights</h3>
+                        <div class="card-subtitle">Submit observations, pricing accuracy feedback, or feature requests</div>
+                    </div>
+                </div>
+
+                <div class="feedback-form-box">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:13px; font-weight:700;">Rate System Performance:</span>
+                        <div class="star-rating" id="starContainer">
+                            <span data-value="1">★</span>
+                            <span data-value="2">★</span>
+                            <span data-value="3">★</span>
+                            <span data-value="4">★</span>
+                            <span data-value="5" class="active">★</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedbackCategory">Feedback Category</label>
+                        <select id="feedbackCategory">
+                            <option value="Pricing Accuracy">Pricing Recommendation Accuracy</option>
+                            <option value="Demand Forecast">Demand & Occupancy Forecast</option>
+                            <option value="Festival/Event Adjustment">Festival / Local Event Adjustment</option>
+                            <option value="Feature Request">Feature Request</option>
+                            <option value="General Insights">General Operational Insights</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="feedbackComment">Observations & Notes</label>
+                        <textarea id="feedbackComment" rows="2" placeholder="e.g., Weekend rates in December performed exceptionally well..."></textarea>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-submit-feedback" onclick="submitFeedback()">Submit Feedback</button>
+                        <span id="feedbackStatus" style="font-size:12px; font-weight:700;"></span>
+                    </div>
+                </div>
+
+                <!-- Live Feedback Feed -->
+                <h4 style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">Recent Owner Notes</h4>
+                <div class="feedback-feed" id="feedbackFeed">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // Formatting helpers
+        const formatINR = n => '₹' + Number(n).toLocaleString('en-IN');
+        let chartInstance = null;
+        let selectedStars = 5;
+
+        // --- 1. Load Simulation & Benchmark Metrics ---
+        fetch('/api/results')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('kpiUplift').textContent = '+' + data.simulation.uplift_pct + '%';
+                document.getElementById('kpiDynamic').textContent = formatINR(data.simulation.dynamic);
+                document.getElementById('kpiFixed').textContent = formatINR(data.simulation.fixed);
+
+                const tbody = document.getElementById('modelTableBody');
+                tbody.innerHTML = data.models.map(m => {
+                    const isWinner = m.model.includes('Demand curve');
+                    return `
+                        <tr class="${isWinner ? 'highlight-row' : ''}">
+                            <td>
+                                <strong>${m.model}</strong>
+                                ${isWinner ? ' <span class="badge-model badge-winner">Active Optimizer</span>' : ''}
+                            </td>
+                            <td>${m.MAE}</td>
+                            <td>${m.RMSE}</td>
+                            <td><strong>${m.R2}</strong></td>
+                        </tr>
+                    `;
+                }).join('');
+            })
+            .catch(err => console.error("Error loading benchmark results:", err));
+
+        // --- 2. Load 60-Day Forecast & Chart.js ---
+        function loadForecast(days, btnElement) {
+            if (btnElement) {
+                document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+
+            fetch('/api/forecast?days=' + days)
+                .then(res => res.json())
+                .then(data => {
+                    const ctx = document.getElementById('forecastChart').getContext('2d');
+                    
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
+
+                    const labels = data.map(x => x.date.slice(5)); // MM-DD
+                    const prices = data.map(x => x.price);
+                    const occupancies = data.map(x => x.occupancy);
+
+                    // Create gradient background for price
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+                    gradient.addColorStop(0, 'rgba(45, 106, 79, 0.25)');
+                    gradient.addColorStop(1, 'rgba(45, 106, 79, 0.01)');
+
+                    chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Recommended Rate (₹)',
+                                    data: prices,
+                                    borderColor: '#1e4620',
+                                    backgroundColor: gradient,
+                                    borderWidth: 2.5,
+                                    fill: true,
+                                    tension: 0.35,
+                                    pointRadius: days > 30 ? 1 : 3,
+                                    pointHoverRadius: 6,
+                                    yAxisID: 'y'
+                                },
+                                {
+                                    label: 'Predicted Occupancy (%)',
+                                    data: occupancies,
+                                    borderColor: '#e76f51',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 2,
+                                    borderDash: [4, 4],
+                                    tension: 0.35,
+                                    pointRadius: days > 30 ? 1 : 3,
+                                    pointHoverRadius: 6,
+                                    yAxisID: 'y1'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        boxWidth: 14,
+                                        font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' }
+                                    }
+                                },
+                                tooltip: {
+                                    padding: 10,
+                                    callbacks: {
+                                        label: function(context) {
+                                            if (context.datasetIndex === 0) {
+                                                return ' Recommended Rate: ' + formatINR(context.raw);
+                                            } else {
+                                                return ' Occupancy: ' + context.raw + '%';
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { maxRotation: 0, font: { size: 11 } }
+                                },
+                                y: {
+                                    position: 'left',
+                                    title: { display: true, text: 'Price (₹)', font: { size: 11, weight: 'bold' } },
+                                    ticks: { callback: v => '₹' + v.toLocaleString() },
+                                    grid: { color: '#f0f3ee' }
+                                },
+                                y1: {
+                                    position: 'right',
+                                    title: { display: true, text: 'Occupancy %', font: { size: 11, weight: 'bold' } },
+                                    min: 0,
+                                    max: 100,
+                                    ticks: { callback: v => v + '%' },
+                                    grid: { drawOnChartArea: false }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(err => console.error("Error loading forecast:", err));
+        }
+
+        // --- 3. What-If Simulator ---
+        const whatifDate = document.getElementById('whatifDate');
+        const whatifPrice = document.getElementById('whatifPrice');
+        const sliderValDisplay = document.getElementById('sliderValDisplay');
+
+        whatifDate.value = new Date().toISOString().slice(0, 10);
+        whatifPrice.oninput = () => {
+            sliderValDisplay.textContent = formatINR(whatifPrice.value);
+        };
+
+        function runWhatIf() {
+            const date = whatifDate.value;
+            const price = whatifPrice.value;
+            if (!date) return;
+
+            fetch(`/api/whatif?date=${date}&price=${price}`)
+                .then(r => r.json())
+                .then(r => {
+                    document.getElementById('resBookings').textContent = r.bookings + ' / 20';
+                    document.getElementById('resOccupancy').textContent = r.occupancy + '%';
+                    document.getElementById('resRevenue').textContent = formatINR(r.revenue);
+                })
+                .catch(err => console.error("Error running what-if:", err));
+        }
+
+        // --- 4. Daily Bookings Management ---
+        const bookDate = document.getElementById('bookDate');
+        const bookRooms = document.getElementById('bookRooms');
+        const bookPrice = document.getElementById('bookPrice');
+        const bookingMsg = document.getElementById('bookingMsg');
+        const bookingHistoryBody = document.getElementById('bookingHistoryBody');
+
+        bookDate.value = new Date().toISOString().slice(0, 10);
+
+        function loadBookings() {
+            fetch('/api/bookings')
+                .then(r => r.json())
+                .then(rows => {
+                    if (!rows || rows.length === 0) {
+                        bookingHistoryBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No bookings recorded yet.</td></tr>';
+                        return;
+                    }
+                    bookingHistoryBody.innerHTML = rows.map(r => {
+                        const pct = Math.min(100, Math.round((r.rooms_booked / 20) * 100));
+                        return `
+                            <tr>
+                                <td><strong>${r.date}</strong></td>
+                                <td>
+                                    ${r.rooms_booked} / 20 rooms (${pct}%)
+                                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%"></div></div>
+                                </td>
+                                <td>${formatINR(r.price)}</td>
+                                <td><strong>${formatINR(r.revenue)}</strong></td>
+                            </tr>
+                        `;
+                    }).join('');
+                })
+                .catch(err => console.error("Error loading bookings:", err));
+        }
+
+        function recordBooking() {
+            const date = bookDate.value;
+            const rooms = parseInt(bookRooms.value, 10);
+            const price = parseInt(bookPrice.value, 10);
+
+            if (isNaN(rooms) || rooms < 0 || rooms > 20) {
+                bookingMsg.innerHTML = '<span class="msg-err">⚠️ Rooms must be between 0 and 20</span>';
+                return;
+            }
+            if (isNaN(price) || price < 2000 || price > 9000) {
+                bookingMsg.innerHTML = '<span class="msg-err">⚠️ Price must be between ₹2,000 and ₹9,000</span>';
+                return;
+            }
+
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date, rooms, price })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok) {
+                    bookingMsg.innerHTML = '<span class="msg-success">✓ Booking recorded successfully!</span>';
+                    bookRooms.value = '';
+                    bookPrice.value = '';
+                    loadBookings();
+                    setTimeout(() => { bookingMsg.textContent = ''; }, 3500);
+                } else {
+                    bookingMsg.innerHTML = `<span class="msg-err">⚠️ ${data.error}</span>`;
+                }
+            })
+            .catch(err => {
+                bookingMsg.innerHTML = '<span class="msg-err">Connection error.</span>';
+            });
+        }
+
+        // --- 5. Owner Feedback System ---
+        const starSpans = document.querySelectorAll('#starContainer span');
+        starSpans.forEach(span => {
+            span.onclick = () => {
+                selectedStars = parseInt(span.getAttribute('data-value'), 10);
+                updateStars(selectedStars);
+            };
+        });
+
+        function updateStars(val) {
+            starSpans.forEach(s => {
+                const sVal = parseInt(s.getAttribute('data-value'), 10);
+                if (sVal <= val) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        }
+
+        function loadFeedback() {
+            fetch('/api/feedback')
+                .then(r => r.json())
+                .then(items => {
+                    const feed = document.getElementById('feedbackFeed');
+                    if (!items || items.length === 0) {
+                        feed.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding:12px;">No feedback notes submitted yet.</div>';
+                        return;
+                    }
+                    feed.innerHTML = items.map(item => `
+                        <div class="feedback-card">
+                            <div class="feedback-card-top">
+                                <span class="feedback-cat-tag">${item.category}</span>
+                                <span class="feedback-date">${item.created_at}</span>
+                            </div>
+                            <div class="feedback-stars">${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}</div>
+                            <div class="feedback-comment">${item.comment}</div>
+                        </div>
+                    `).join('');
+                })
+                .catch(err => console.error("Error loading feedback:", err));
+        }
+
+        function submitFeedback() {
+            const category = document.getElementById('feedbackCategory').value;
+            const comment = document.getElementById('feedbackComment').value.trim();
+            const status = document.getElementById('feedbackStatus');
+
+            if (!comment) {
+                status.innerHTML = '<span class="msg-err">Please write an observation.</span>';
+                return;
+            }
+
+            fetch('/api/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    category: category,
+                    rating: selectedStars,
+                    comment: comment
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.ok) {
+                    status.innerHTML = '<span class="msg-success">✓ Feedback submitted!</span>';
+                    document.getElementById('feedbackComment').value = '';
+                    loadFeedback();
+                    setTimeout(() => { status.textContent = ''; }, 3000);
+                } else {
+                    status.innerHTML = `<span class="msg-err">⚠️ ${data.error}</span>`;
+                }
+            })
+            .catch(err => {
+                status.innerHTML = '<span class="msg-err">Connection error.</span>';
+            });
+        }
+
+        // Initial setup calls
+        loadForecast(60);
+        runWhatIf();
+        loadBookings();
+        loadFeedback();
+    </script>
+</body>
+</html>

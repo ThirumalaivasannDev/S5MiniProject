@@ -1,0 +1,33 @@
+{
+ "models": [
+  {
+   "model": "Baseline (month+weekend average)",
+   "MAE": 2.77,
+   "RMSE": 3.64,
+   "R2": 0.205
+  },
+  {
+   "model": "Random Forest",
+   "MAE": 1.38,
+   "RMSE": 2.1,
+   "R2": 0.736
+  },
+  {
+   "model": "Gradient Boosting (price-monotonic)",
+   "MAE": 1.51,
+   "RMSE": 2.04,
+   "R2": 0.75
+  },
+  {
+   "model": "Demand curve (used for pricing)",
+   "MAE": 1.18,
+   "RMSE": 1.86,
+   "R2": 0.793
+  }
+ ],
+ "simulation": {
+  "dynamic": 9200607,
+  "fixed": 8526140,
+  "uplift_pct": 7.9
+ }
+}
