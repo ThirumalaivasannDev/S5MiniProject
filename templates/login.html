@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if portal == 'customer' %}Guest Portal Access{% else %}Owner Portal Access{% endif %} – EcoStay AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e4620;
+            --primary-light: #2d6a4f;
+            --primary-dark: #132e15;
+            --accent: #52b788;
+            --accent-soft: #d8f3dc;
+            --sand: #f4f7f2;
+            --surface: #ffffff;
+            --text-main: #19271c;
+            --text-muted: #5a6e60;
+            --border: #e2e8df;
+            --shadow-lg: 0 20px 40px rgba(19, 46, 21, 0.12);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef5ec 0%, #d8ebd7 100%);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            color: var(--text-main);
+            padding: 24px 16px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius);
+            padding: 38px 34px;
+            width: 100%;
+            max-width: 440px;
+            text-align: left;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.15);
+        }
+
+        .brand-header h2 {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+
+        .brand-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Portal Switcher Badge */
+        .portal-badge-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .portal-switch-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-light);
+            background: #eef7ee;
+            border: 1px solid #cce8d0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .portal-switch-link:hover {
+            background: var(--accent-soft);
+            color: var(--primary-dark);
+            border-color: var(--accent);
+        }
+
+        /* Segmented Tabs: Sign In vs Sign Up */
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #eef3ec;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .auth-tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .auth-tab-btn.active {
+            background: #ffffff;
+            color: var(--primary-dark);
+            box-shadow: 0 2px 8px rgba(30, 70, 32, 0.08);
+        }
+
+        .err-banner {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-title-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input, .form-select {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fbfdfa;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper input:focus, .form-select:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(82, 183, 136, 0.18);
+        }
+
+        .role-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(30, 70, 32, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(30, 70, 32, 0.3);
+        }
+
+        .switch-prompt {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .switch-prompt a {
+            color: var(--primary-light);
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .switch-prompt a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-nav {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-nav a {
+            color: var(--primary-light);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .footer-nav a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="brand-header">
+            <div class="brand-icon">🌿</div>
+            <h2 id="brandTitle">
+                {% if portal == 'customer' %}EcoStay Guest Portal{% else %}EcoStay Revenue AI{% endif %}
+            </h2>
+            <p id="brandSubtitle">
+                {% if portal == 'customer' %}
+                Direct dynamic rate bookings & member reservations
+                {% else %}
+                Owner Dashboard & Dynamic Pricing Control
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="portal-badge-bar">
+            {% if portal == 'customer' %}
+            <a href="/login?portal=owner&mode={{ mode }}" class="portal-switch-link">
+                <span>🔐</span> Switch to Owner Portal
+            </a>
+            {% else %}
+            <a href="/login?portal=customer&mode={{ mode }}" class="portal-switch-link">
+                <span>🏨</span> Switch to Guest Portal
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- 1. Ask Sign In or Sign Up -->
+        <div class="auth-tabs" role="tablist">
+            <button type="button" class="auth-tab-btn {% if mode != 'signup' %}active{% endif %}" id="tabBtnSignIn" onclick="setAuthMode('signin')">
+                <span>🔑</span> Sign In
+            </button>
+            <button type="button" class="auth-tab-btn {% if mode == 'signup' %}active{% endif %}" id="tabBtnSignUp" onclick="setAuthMode('signup')">
+                <span>✨</span> Sign Up
+            </button>
+        </div>
+
+        {% if error %}
+        <div class="err-banner" id="errorBanner">
+            <span>⚠️</span> {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="form-title-hint" id="formHint">
+            {% if mode == 'signup' %}
+            Create a new account to register and save in database.
+            {% else %}
+            Enter your credentials to access your account.
+            {% endif %}
+        </div>
+
+        <!-- Form without autofill -->
+        <form method="post" id="authForm" autocomplete="off">
+            <input type="hidden" name="action" id="actionField" value="{{ mode or 'signin' }}">
+            <input type="hidden" name="portal" id="portalField" value="{{ portal or 'owner' }}">
+            <input type="hidden" name="next" value="{{ next or '' }}">
+
+            <!-- 2. Username (autocomplete disabled) -->
+            <div class="form-group">
+                <label for="username" id="usernameLabel">
+                    {% if portal == 'customer' %}Guest Username{% else %}Owner Username{% endif %}
+                </label>
+                <div class="input-wrapper">
+                    <input 
+                        name="username" 
+                        id="username" 
+                        placeholder="{% if mode == 'signup' %}Choose username (min 3 chars){% else %}Enter username{% endif %}" 
+                        required 
+                        autofocus 
+                        autocomplete="off" 
+                        spellcheck="false"
+                    >
+                </div>
+            </div>
+
+            <!-- 3. Password (autocomplete disabled) -->
+            <div class="form-group">
+                <label for="password" id="passwordLabel">Password</label>
+                <div class="input-wrapper">
+                    <input 
+                        name="password" 
+                        id="password" 
+                        type="password" 
+                        placeholder="{% if mode == 'signup' %}Create password (min 6 chars){% else %}Enter password{% endif %}" 
+                        required 
+                        autocomplete="new-password"
+                    >
+                </div>
+            </div>
+
+            <!-- Optional Role selector for Sign Up -->
+            <div class="form-group" id="roleGroup" style="{% if mode != 'signup' or portal == 'customer' %}display: none;{% endif %}">
+                <label for="roleSelect">Account Type</label>
+                <select name="role" id="roleSelect" class="form-select">
+                    <option value="owner" selected>Lodge Owner (Admin Access)</option>
+                    <option value="customer">Customer Guest</option>
+                </select>
+                <div class="role-hint">Stored securely with hashed password in PostgreSQL / Supabase.</div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit" id="submitBtn">
+                {% if mode == 'signup' %}
+                <span>✨</span> Create Account & Sign In →
+                {% else %}
+                <span>🔑</span> Sign In →
+                {% endif %}
+            </button>
+
+            <!-- Bottom Toggle Prompt -->
+            <div class="switch-prompt" id="switchPrompt">
+                {% if mode == 'signup' %}
+                Already have an account? <a onclick="setAuthMode('signin')">Sign In</a>
+                {% else %}
+                New here? <a onclick="setAuthMode('signup')">Sign Up for an account</a>
+                {% endif %}
+            </div>
+
+            <div class="footer-nav">
+                <a href="/book">← Customer Booking</a>
+                <a href="/">Owner Dashboard →</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const isCustomer = "{{ portal }}" === "customer";
+        let currentMode = "{{ mode or 'signin' }}";
+
+        function setAuthMode(mode) {
+            currentMode = mode;
+            const actionField = document.getElementById('actionField');
+            const tabBtnSignIn = document.getElementById('tabBtnSignIn');
+            const tabBtnSignUp = document.getElementById('tabBtnSignUp');
+            const submitBtn = document.getElementById('submitBtn');
+            const formHint = document.getElementById('formHint');
+            const roleGroup = document.getElementById('roleGroup');
+            const switchPrompt = document.getElementById('switchPrompt');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+
+            actionField.value = mode;
+
+            if (mode === 'signup') {
+                tabBtnSignIn.classList.remove('active');
+                tabBtnSignUp.classList.add('active');
+                formHint.textContent = 'Register a new user account. Credentials are stored in Postgres / Supabase.';
+                submitBtn.innerHTML = '<span>✨</span> Create Account & Sign In →';
+                switchPrompt.innerHTML = 'Already have an account? <a onclick="setAuthMode(\'signin\')">Sign In</a>';
+                usernameInput.placeholder = 'Choose username (min 3 chars)';
+                passwordInput.placeholder = 'Create password (min 6 chars)';
+                if (!isCustomer) {
+                    roleGroup.style.display = 'block';
+                }
+            } else {
+                tabBtnSignUp.classList.remove('active');
+                tabBtnSignIn.classList.add('active');
+                formHint.textContent = 'Enter your credentials to access your account.';
+                submitBtn.innerHTML = '<span>🔑</span> Sign In →';
+                switchPrompt.innerHTML = 'New here? <a onclick="setAuthMode(\'signup\')">Sign Up for an account</a>';
+                usernameInput.placeholder = 'Enter username';
+                passwordInput.placeholder = 'Enter password';
+                roleGroup.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

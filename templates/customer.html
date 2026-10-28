@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EcoStay Rainforest Retreat – Live Dynamic Room Pricing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e4620;
+            --primary-light: #2d6a4f;
+            --primary-dark: #132e15;
+            --accent: #52b788;
+            --accent-soft: #d8f3dc;
+            --sand: #f8faf6;
+            --surface: #ffffff;
+            --text-main: #19271c;
+            --text-muted: #5a6e60;
+            --border: #e2e8df;
+            --gold: #d4a373;
+            --shadow-sm: 0 2px 8px rgba(30, 70, 32, 0.05);
+            --shadow-md: 0 8px 24px rgba(30, 70, 32, 0.08);
+            --shadow-lg: 0 16px 36px rgba(30, 70, 32, 0.12);
+            --radius-md: 14px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--sand);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Top Navbar */
+        nav {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--primary);
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .brand-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+            line-height: 1.2;
+        }
+
+        .brand-text span {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary-light);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .owner-portal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .owner-portal-btn:hover {
+            border-color: var(--primary);
+            background: var(--accent-soft);
+            transform: translateY(-1px);
+        }
+
+        /* Customer Authentication Styles */
+        .user-status-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: #eef8f0;
+            color: var(--primary-dark);
+            border: 1px solid #c8e6ce;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-customer-auth {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-customer-auth:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 70, 32, 0.2);
+        }
+
+        .btn-logout-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-logout-link:hover {
+            background: #fee2e2;
+        }
+
+        /* Auth Modal Specifics */
+        .auth-tabs-modal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #eef3ec;
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .auth-tab-btn-modal {
+            background: transparent;
+            border: none;
+            padding: 9px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .auth-tab-btn-modal.active {
+            background: #fff;
+            color: var(--primary-dark);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .modal-input-group {
+            margin-bottom: 14px;
+            text-align: left;
+        }
+
+        .modal-input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .modal-input-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            font-size: 14px;
+            background: #fbfdfa;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .modal-input-group input:focus {
+            border-color: var(--accent);
+            background: #fff;
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 48px 24px 64px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            max-width: 760px;
+            margin: 0 auto 40px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--accent-soft);
+            color: var(--primary-dark);
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 50px;
+            margin-bottom: 16px;
+            letter-spacing: 0.02em;
+        }
+
+        .hero h2 {
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--primary-dark);
+            margin-bottom: 14px;
+            line-height: 1.15;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Booking Grid */
+        .booking-section {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 28px;
+            align-items: start;
+            margin-bottom: 56px;
+        }
+
+        @media (max-width: 860px) {
+            .booking-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Booking Card */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            padding: 32px;
+            transition: box-shadow 0.2s;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .lodge-capacity-pill {
+            font-size: 12px;
+            background: #eef5ec;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .date-input-wrapper {
+            position: relative;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-main);
+            background: #fbfdfa;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(82, 183, 136, 0.15);
+        }
+
+        .btn-check {
+            width: 100%;
+            padding: 14px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(30, 70, 32, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-check:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(30, 70, 32, 0.3);
+        }
+
+        /* Price Result Box */
+        .price-display-box {
+            margin-top: 24px;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #f2f8f3 0%, #e8f4ea 100%);
+            border: 1px solid #cce5d2;
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stay-date-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .price-val {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+        }
+
+        .price-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .price-perks {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px dashed #b7d8bf;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .perk-item {
+            font-size: 12px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reserve {
+            margin-top: 20px;
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-reserve:hover {
+            background: var(--primary-dark);
+        }
+
+        .err {
+            background: #fdf2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 18px;
+            text-align: center;
+        }
+
+        /* Side Info Card */
+        .info-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-card h4 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .eco-badges-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .eco-badge-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .eco-badge-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .eco-badge-row h5 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .eco-badge-row p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 0;
+            line-height: 1.4;
+        }
+
+        /* Amenities Showcase */
+        .amenities-section {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .section-title h3 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .section-title p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .amenities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+
+        .amenity-card {
+            background: #fff;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .amenity-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .amenity-icon {
+            font-size: 28px;
+            margin-bottom: 14px;
+            display: inline-block;
+        }
+
+        .amenity-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--primary-dark);
+        }
+
+        .amenity-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Reservation Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(19, 46, 21, 0.6);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: #fff;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .modal-box h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .modal-box p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .modal-details {
+            background: var(--sand);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .modal-close-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            background: #ffffff;
+            padding: 28px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="/book" class="brand">
+            <div class="brand-icon">🌿</div>
+            <div class="brand-text">
+                <h1>EcoStay</h1>
+                <span>Rainforest Eco-Lodge</span>
+            </div>
+        </a>
+        <div class="nav-links" id="navLinksContainer">
+            {% if session.get('user') %}
+            <div class="user-status-group">
+                <span class="user-badge">
+                    <span>👤</span> <strong>{{ session.get('user') }}</strong>
+                    <span style="opacity: 0.75; font-size: 11px;">({{ session.get('role', 'customer')|capitalize }})</span>
+                </span>
+                {% if session.get('role') == 'owner' %}
+                <a href="/" class="owner-portal-btn" style="background:#eef8f0; border-color:#c8e6ce;">
+                    <span>📊</span> Owner Dashboard
+                </a>
+                {% endif %}
+                <a href="/logout?next=/book" class="btn-logout-link">
+                    <span>🚪</span> Sign Out
+                </a>
+            </div>
+            {% else %}
+            <button type="button" class="btn-customer-auth" onclick="openCustomerAuth('signin')">
+                <span>🔑</span> Sign In / Sign Up
+            </button>
+            <a href="/login?portal=owner" class="owner-portal-btn">
+                <span>🔐</span> Owner Portal
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero">
+            <div class="badge">🌱 Sustainable Hospitality · AI Dynamic Rates</div>
+            <h2>Experience Luxury in Nature</h2>
+            <p>Our intelligent pricing engine guarantees the fair direct rate for every stay date. Transparent, real-time eco-lodge room rates with zero hidden booking commissions.</p>
+        </section>
+
+        <section class="booking-section">
+            <!-- Left Card: Dynamic Price Checker -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Check Direct Room Rate</h3>
+                    <span class="lodge-capacity-pill">20 Private Suites</span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="stayDate">Choose Your Stay Date</label>
+                    <div class="date-input-wrapper">
+                        <input type="date" id="stayDate">
+                    </div>
+                </div>
+
+                <button class="btn-check" onclick="fetchPrice()">
+                    <span>✨ Calculate Nightly Rate</span>
+                </button>
+
+                <div id="priceOutput"></div>
+            </div>
+
+            <!-- Right Card: Why Stay Direct With EcoStay -->
+            <div class="info-card">
+                <h4>Why Book Direct With Us?</h4>
+                <p>By booking direct through our dynamic portal, you receive the lowest guaranteed rate calculated for your selected season and dates.</p>
+                
+                <ul class="eco-badges-list">
+                    <li class="eco-badge-row">
+                        <div class="eco-badge-icon">🌿</div>
+                        <div>
+                            <h5>Zero Carbon Stay</h5>
+                            <p>100% solar and micro-hydro powered accommodations with eco-certifications.</p>
+                        </div>
+                    </li>
+                    <li class="eco-badge-row">
+                        <div class="eco-badge-icon">🥑</div>
+                        <div>
+                            <h5>Farm-to-Table Breakfast</h5>
+                            <p>Complimentary organic breakfast sourced fresh daily from our heritage permaculture garden.</p>
+                        </div>
+                    </li>
+                    <li class="eco-badge-row">
+                        <div class="eco-badge-icon">🛡️</div>
+                        <div>
+                            <h5>Direct Best Rate Guarantee</h5>
+                            <p>AI pricing ensures real-time pricing without middleman commission markups.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Amenities Section -->
+        <section class="amenities-section">
+            <div class="section-title">
+                <h3>Designed in Harmony with the Forest</h3>
+                <p>Thoughtfully crafted facilities that immerse you in biodiversity.</p>
+            </div>
+            <div class="amenities-grid">
+                <div class="amenity-card">
+                    <span class="amenity-icon">🏡</span>
+                    <h4>Panoramic Rainforest Suites</h4>
+                    <p>Open-air teak balconies perched overlooking the mist-covered canopy and valley.</p>
+                </div>
+                <div class="amenity-card">
+                    <span class="amenity-icon">🚿</span>
+                    <h4>Solar Rain Showers</h4>
+                    <p>Spring-fed rainwater systems with thermal solar heating for pure mountain luxury.</p>
+                </div>
+                <div class="amenity-card">
+                    <span class="amenity-icon">🦜</span>
+                    <h4>Guided Dawn Birding</h4>
+                    <p>Complimentary morning expeditions led by our resident naturalist and botanist.</p>
+                </div>
+                <div class="amenity-card">
+                    <span class="amenity-icon">🧘</span>
+                    <h4>Canopy Yoga Deck</h4>
+                    <p>Peaceful meditation and wellness pavilion nestled beside natural spring streams.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Customer Sign In / Sign Up Modal -->
+    <div class="modal-overlay" id="customerAuthModal">
+        <div class="modal-box" style="max-width: 420px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 22px;">🌿</span>
+                    <h3 style="font-size: 18px; margin: 0; color: var(--primary-dark);">Customer Portal</h3>
+                </div>
+                <button type="button" onclick="closeCustomerAuth()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+
+            <!-- 1. Ask Sign In or Sign Up -->
+            <div class="auth-tabs-modal" role="tablist">
+                <button type="button" class="auth-tab-btn-modal active" id="modalTabSignIn" onclick="setCustomerAuthMode('signin')">
+                    <span>🔑</span> Sign In
+                </button>
+                <button type="button" class="auth-tab-btn-modal" id="modalTabSignUp" onclick="setCustomerAuthMode('signup')">
+                    <span>✨</span> Sign Up
+                </button>
+            </div>
+
+            <div id="modalAuthAlert" style="display: none;" class="err"></div>
+
+            <form id="customerAuthForm" onsubmit="handleCustomerAuth(event)" autocomplete="off">
+                <!-- 2. Get username without autofill -->
+                <div class="modal-input-group">
+                    <label for="custAuthUsername">Guest Username</label>
+                    <input 
+                        type="text" 
+                        id="custAuthUsername" 
+                        name="username" 
+                        placeholder="Enter your username" 
+                        required 
+                        autocomplete="off" 
+                        spellcheck="false"
+                    >
+                </div>
+
+                <!-- 3. Get password without autofill -->
+                <div class="modal-input-group">
+                    <label for="custAuthPassword">Password</label>
+                    <input 
+                        type="password" 
+                        id="custAuthPassword" 
+                        name="password" 
+                        placeholder="••••••••" 
+                        required 
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div id="custAuthNotice" style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px;">
+                    Sign in to access your direct booking benefits and guaranteed rates.
+                </div>
+
+                <button type="submit" class="btn-check" id="custAuthSubmitBtn" style="width: 100%; border-radius: 8px; padding: 12px;">
+                    <span>Sign In to Account →</span>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 14px; font-size: 12px; color: var(--text-muted);">
+                Prefer a dedicated page? <a href="/login?portal=customer&next=/book" style="color: var(--primary-light); font-weight: 600;">Go to login page</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservation Modal Simulated -->
+    <div class="modal-overlay" id="reserveModal">
+        <div class="modal-box">
+            <div class="modal-icon">🎉</div>
+            <h3>Reservation Requested!</h3>
+            <p>Thank you for choosing EcoStay. We have held your preferred dates under the guaranteed rate.</p>
+            <div class="modal-details" id="modalDetails"></div>
+            <button class="modal-close-btn" onclick="closeModal()">Close & Return</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 EcoStay Rainforest Eco-Tourism Hospitality. All rights reserved. Powered by AI Dynamic Pricing Engine.</p>
+    </footer>
+
+    <script>
+        const dateInput = document.getElementById('stayDate');
+        const priceOutput = document.getElementById('priceOutput');
+        const reserveModal = document.getElementById('reserveModal');
+        const modalDetails = document.getElementById('modalDetails');
+
+        // Set minimum date to today
+        const todayStr = new Date().toISOString().slice(0, 10);
+        dateInput.min = todayStr;
+        dateInput.value = todayStr;
+
+        let currentPrice = null;
+        let currentDate = null;
+
+        function fetchPrice() {
+            const selectedDate = dateInput.value;
+            if (!selectedDate) return;
+
+            priceOutput.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 14px;">
+                    🌿 Fetching dynamic rate for ${selectedDate}...
+                </div>
+            `;
+
+            fetch('/api/public-price?date=' + selectedDate)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        priceOutput.innerHTML = `<div class="err">⚠️ ${data.error}</div>`;
+                        currentPrice = null;
+                    } else {
+                        currentPrice = data.price_per_night;
+                        currentDate = data.date;
+
+                        // Format date nicely
+                        const dObj = new Date(data.date + 'T00:00:00');
+                        const dateFormatted = dObj.toLocaleDateString('en-IN', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+
+                        priceOutput.innerHTML = `
+                            <div class="price-display-box">
+                                <div class="stay-date-label">📅 Stay Date: ${dateFormatted}</div>
+                                <div class="price-val">₹${data.price_per_night.toLocaleString('en-IN')}</div>
+                                <div class="price-sub">per suite / night · taxes & organic breakfast included</div>
+                                
+                                <div class="price-perks">
+                                    <div class="perk-item">✓ Best Direct Rate Guaranteed</div>
+                                    <div class="perk-item">✓ Zero Cancellation Fees (48h)</div>
+                                    <div class="perk-item">✓ Complimentary Naturalist Walk</div>
+                                    <div class="perk-item">✓ Solar Powered Forest Chalet</div>
+                                </div>
+
+                                <button class="btn-reserve" onclick="openReservationModal('${data.date}', ${data.price_per_night})">
+                                    🌿 Reserve Suite at ₹${data.price_per_night.toLocaleString('en-IN')}
+                                </button>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(err => {
+                    priceOutput.innerHTML = `<div class="err">Connection error. Please try again.</div>`;
+                });
+        }
+
+        const loggedInUser = "{{ session.get('user', '') }}";
+        const loggedInRole = "{{ session.get('role', '') }}";
+
+        let customerAuthMode = 'signin';
+        const customerAuthModal = document.getElementById('customerAuthModal');
+        const modalTabSignIn = document.getElementById('modalTabSignIn');
+        const modalTabSignUp = document.getElementById('modalTabSignUp');
+        const custAuthUsername = document.getElementById('custAuthUsername');
+        const custAuthPassword = document.getElementById('custAuthPassword');
+        const custAuthSubmitBtn = document.getElementById('custAuthSubmitBtn');
+        const custAuthNotice = document.getElementById('custAuthNotice');
+        const modalAuthAlert = document.getElementById('modalAuthAlert');
+
+        function openCustomerAuth(mode = 'signin') {
+            setCustomerAuthMode(mode);
+            modalAuthAlert.style.display = 'none';
+            custAuthUsername.value = '';
+            custAuthPassword.value = '';
+            customerAuthModal.style.display = 'grid';
+            setTimeout(() => custAuthUsername.focus(), 100);
+        }
+
+        function closeCustomerAuth() {
+            customerAuthModal.style.display = 'none';
+        }
+
+        function setCustomerAuthMode(mode) {
+            customerAuthMode = mode;
+            modalAuthAlert.style.display = 'none';
+            if (mode === 'signup') {
+                modalTabSignIn.classList.remove('active');
+                modalTabSignUp.classList.add('active');
+                custAuthSubmitBtn.innerHTML = '<span>✨ Register New Guest Account →</span>';
+                custAuthNotice.textContent = 'Creates a new guest account saved securely in Supabase / Postgres.';
+                custAuthUsername.placeholder = 'Choose username (min 3 chars)';
+                custAuthPassword.placeholder = 'Choose password (min 6 chars)';
+            } else {
+                modalTabSignUp.classList.remove('active');
+                modalTabSignIn.classList.add('active');
+                custAuthSubmitBtn.innerHTML = '<span>🔑 Sign In as Guest →</span>';
+                custAuthNotice.textContent = 'Sign in to access your direct booking benefits and guaranteed rates.';
+                custAuthUsername.placeholder = 'Enter your username';
+                custAuthPassword.placeholder = 'Enter your password';
+            }
+        }
+
+        async function handleCustomerAuth(e) {
+            e.preventDefault();
+            const username = custAuthUsername.value.trim();
+            const password = custAuthPassword.value;
+            if (!username || !password) return;
+
+            custAuthSubmitBtn.disabled = true;
+            custAuthSubmitBtn.innerHTML = '<span>⏳ Processing...</span>';
+            modalAuthAlert.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: customerAuthMode,
+                        username: username,
+                        password: password,
+                        portal: 'customer'
+                    })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    modalAuthAlert.style.background = '#eef8f0';
+                    modalAuthAlert.style.color = '#2d6a4f';
+                    modalAuthAlert.style.border = '1px solid #c8e6ce';
+                    modalAuthAlert.style.display = 'block';
+                    modalAuthAlert.style.marginTop = '0';
+                    modalAuthAlert.style.marginBottom = '14px';
+                    modalAuthAlert.style.padding = '10px';
+                    modalAuthAlert.innerHTML = `<span>✓ ${data.message || 'Success!'}</span>`;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    modalAuthAlert.style.background = '#fef2f2';
+                    modalAuthAlert.style.color = '#b91c1c';
+                    modalAuthAlert.style.border = '1px solid #fecaca';
+                    modalAuthAlert.style.display = 'block';
+                    modalAuthAlert.style.marginTop = '0';
+                    modalAuthAlert.style.marginBottom = '14px';
+                    modalAuthAlert.style.padding = '10px';
+                    modalAuthAlert.textContent = data.error || 'Authentication error. Please check your credentials.';
+                    custAuthSubmitBtn.disabled = false;
+                    setCustomerAuthMode(customerAuthMode);
+                }
+            } catch (err) {
+                modalAuthAlert.style.background = '#fef2f2';
+                modalAuthAlert.style.color = '#b91c1c';
+                modalAuthAlert.style.border = '1px solid #fecaca';
+                modalAuthAlert.style.display = 'block';
+                modalAuthAlert.textContent = 'Server connection error. Please try again.';
+                custAuthSubmitBtn.disabled = false;
+                setCustomerAuthMode(customerAuthMode);
+            }
+        }
+
+        function openReservationModal(date, price) {
+            let accountInfo = '';
+            if (loggedInUser) {
+                accountInfo = `
+                    <div style="margin-top:6px; color:#2d6a4f;"><strong>Guest Account:</strong> 👤 ${loggedInUser} (Verified Guest)</div>
+                    <div style="margin-top:6px; color:#2d6a4f;"><strong>Status:</strong> Confirmed & Held for 15 minutes</div>
+                `;
+            } else {
+                accountInfo = `
+                    <div style="margin-top:6px;"><strong>Guest Status:</strong> Walk-in Guest (<a href="javascript:void(0)" onclick="closeModal(); openCustomerAuth('signin');" style="color:var(--primary); font-weight:700; text-decoration:underline;">Sign In / Sign Up</a> to link to profile)</div>
+                    <div style="margin-top:6px; color:#2d6a4f;"><strong>Status:</strong> Held for 15 minutes</div>
+                `;
+            }
+
+            modalDetails.innerHTML = `
+                <div><strong>Suite Type:</strong> Rainforest Deluxe Chalet (1 King Bed)</div>
+                <div style="margin-top:6px;"><strong>Check-in:</strong> ${date}</div>
+                <div style="margin-top:6px;"><strong>Guaranteed Rate:</strong> ₹${price.toLocaleString('en-IN')} / night</div>
+                ${accountInfo}
+            `;
+            reserveModal.style.display = 'grid';
+        }
+
+        function closeModal() {
+            reserveModal.style.display = 'none';
+        }
+
+        // Fetch initial rate on load
+        fetchPrice();
+    </script>
+</body>
+</html>
